@@ -451,7 +451,7 @@ var game = new function() {
           calcDeg();
         }
       }
-      else if (!conf.debug) {
+      else {
         detach();
         setTimeout(missfunc, 1);
         return false;
