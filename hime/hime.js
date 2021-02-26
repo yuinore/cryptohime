@@ -491,9 +491,7 @@ var game = new function() {
       // TODO: ステージクリア時にはブロックが残ってても良いが、全ステージクリア時にはすべてのブロックが消えていて欲しいのでその対応
       for(var x1 = 0; x1 < line; x1++) {
         for(var y1 = 0; y1 < rows; y1++) {
-          var i1 = y1 * line + x1;
-
-          if (blk[i1]) {
+          if (blk[y1 * line + x1]) {
             var x2y2 = decrypt_position(x1, y1, line, rows);
             g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
           }
@@ -527,11 +525,8 @@ var game = new function() {
       el.style.height = (gh + conf.margin2) + "px";
 
       el = $("gamecanv");
-
-      if(s==stage[0]) { // TODO: check! ************************************************
-        el.width  = gw;
-        el.height = gh;
-      }
+      el.width  = gw; // <-- this will clear the canvas
+      el.height = gh;
 
       el.style.visibility = "visible";
 
