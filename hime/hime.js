@@ -89,6 +89,27 @@ function bitshuffle(z, modulo)  // ビットシャッフル
   }
 }
 
+function decrypt_position(x, y, w, h)
+{
+  var key1 = 9;
+  var key2 = 13;
+  var key3 = [59, 23, 31];
+
+  var z = y * w + x
+  z = (z * key3[0]) % (w * h);
+  z = bitshuffle(z, w * h);
+  z = (z * key3[1]) % (w * h);
+  z = bitshuffle(z, w * h);
+  z = (z * key3[2]) % (w * h);
+  z = bitshuffle(z, w * h);
+  var x2 = z % w;
+  var y2 = (z / w) | 0;
+  x2 = (x2 * key1) % w
+  y2 = (y2 * key2) % h;
+
+  return [x2, y2];
+}
+
 /*
  *  画像管理
  */
@@ -446,18 +467,8 @@ var game = new function() {
       suu--;
 
       var cols = (gh - conf.margin) / sz;
-
-      //**************************************************************************
-      var z = ((y * line + x) * (59)) % (line * cols);
-      z = bitshuffle(z, line * (gh / sz));
-      z = (z * 23) % (line * (gh / sz));
-      z = bitshuffle(z, line * (gh / sz));
-      z = (z * 31) % (line * (gh / sz));
-      z = bitshuffle(z, line * (gh / sz));
-      var x2 = z % line;
-      var y2 = (z / line) | 0;
-      g.drawImage(current_stage.imgbg[0], (x2 * 9) % line * sz, (y2 * 13) % cols * sz, sz, sz, x * sz, y * sz, sz, sz);
-      //**************************************************************************
+      var x2y2 = decrypt_position(x, y, line, cols);
+      g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x * sz, y * sz, sz, sz);
 
       if (!kantuu.enabled) {
         calcDeg((function(x, y) {
@@ -486,17 +497,8 @@ var game = new function() {
           var i1 = y1 * line + x1;
 
           if (blk[i1]) {
-            //**************************************************************************
-            var z = ((y1 * line + x1) * (59)) % (line * cols);
-            z = bitshuffle(z, line * (gh / sz));
-            z = (z * 23) % (line * (gh / sz));
-            z = bitshuffle(z, line * (gh / sz));
-            z = (z * 31) % (line * (gh / sz));
-            z = bitshuffle(z, line * (gh / sz));
-            var x2 = z % line;
-            var y2 = (z / line) | 0;
-            g.drawImage(current_stage.imgbg[0], (x2 * 9) % line * sz, (y2 * 13) % cols * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
-            //**************************************************************************
+            var x2y2 = decrypt_position(x1, y1, line, cols);
+            g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
           }
         }
       }
@@ -546,19 +548,8 @@ var game = new function() {
 
       for(var x1 = 0; x1 < line; x1++) {
         for(var y1 = 0; y1 < cols; y1++) {
-          var i1 = y1 * line + x1;
-
-          //**************************************************************************
-          var z = ((y1 * line + x1) * (59)) % (line * cols);
-          z = bitshuffle(z, line * (gh / sz));
-          z = (z * 23) % (line * (gh / sz));
-          z = bitshuffle(z, line * (gh / sz));
-          z = (z * 31) % (line * (gh / sz));
-          z = bitshuffle(z, line * (gh / sz));
-          var x2 = z % line;
-          var y2 = (z / line) | 0;
-          g.drawImage(img, (x2 * 9) % line * sz, (y2 * 13) % cols * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
-          //**************************************************************************
+          var x2y2 = decrypt_position(x1, y1, line, cols);
+          g.drawImage(img, x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
         }
       }
       //*************************************
