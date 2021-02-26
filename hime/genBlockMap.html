@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="Shift_JIS">
+<title>ひめかべ ブロックマップ生成ツール</title>
+<style>
+<!--
+* {
+	font-size:12px;
+	line-height:120%;
+}
+
+body {
+	color:#555555;
+	background:#FFFFFF;
+	margin:24px 48px;
+}
+
+h1 {
+	color:#FFFFFF;
+	background:#9999A0;
+	font-size:14px;
+	padding:8px 16px;
+}
+
+h2 {
+	color:#555555;
+	background:#CCCCD0;
+	padding:4px;
+	margin:1.2em 0;
+}
+
+h3 {
+	color:#FFFFFF;
+	background:#9DC169;
+	padding:2px;
+	margin:0;
+}
+
+#result {
+	width:100%;
+	height:10em;
+}
+
+#preview {
+	display:none;
+	position:relative;
+}
+
+#img {
+	background:url("data:image/gif;base64,R0lGODlhEAAQAIAAAP///9TU1CH5BAAAAAAALAAAAAAQABAAAAIfjG+gq4jM3IFLJgpswNly/XkcBpIiVaInlLJr9FZWAQA7");
+	border-bottom:24px solid #FFFFFF;
+	position:absolute;
+}
+
+#blkcanv {
+	position:absolute;
+}
+
+#info {
+	background:#FFFAA0;
+	border:1px solid #CCCC33;
+	padding:4px;
+	position:absolute;
+}
+-->
+</style>
+<script>
+<!--
+/*
+ *  ひめかべ ブロックマップ生成ツール Ver.1.00 (C)2014.5.27 by みなみせい
+ */
+var BLOCKSIZE = 16;
+var BLOCK_COLOR = "rgba(64,80,192,0.6)";
+
+/*
+ *  その他の関数
+ */
+function $(nm)
+{
+	return document.getElementById(nm);
+}
+
+function smoothingOff(g)  // スムージングの無効化 (非スケーリング画像をスムージングするブラウザがあるため)
+{
+	g.msImageSmoothingEnabled = false;
+	g.mozImageSmoothingEnabled = false;
+	g.webkitImageSmoothingEnabled = false;
+	g.imageSmoothingEnabled = false;
+}
+
+/*
+ *  ブロックデータ管理
+ */
+var block = new function() {
+	this.data = [];
+
+	this.create = function(img) {
+		var sz = BLOCKSIZE, blk = [], g, el;
+		var x, xl, y, yl, w, h, d, b;
+
+		w = img.width;
+		h = img.height;
+
+		el = document.createElement("canvas");
+		el.width  = w;
+		el.height = h;
+
+		g = el.getContext("2d");
+		smoothingOff(g);
+
+		g.drawImage(img, 0, 0);
+		d = g.getImageData(0, 0, w, h).data;
+
+		/*
+		 *  36測定点の不透明度を調べる
+		 *  →全て透明:ブロックなし, その他:ブロックあり
+		 */
+		var y1 =  0 * w * 4,  // Ｙ軸の測定点: (X,0) (X,3) (X,6) (X,9) (X,12) (X,15)
+			y2 =  3 * w * 4,
+			y3 =  6 * w * 4,
+			y4 =  9 * w * 4,
+			y5 = 12 * w * 4,
+			y6 = 15 * w * 4;
+
+		var x1 =  0 * 4 + 3,  // Ｘ軸の測定点: (0,Y) (3,Y) (6,Y) (9,Y) (12,Y) (15,Y)
+			x2 =  3 * 4 + 3,
+			x3 =  6 * 4 + 3,
+			x4 =  9 * 4 + 3,
+			x5 = 12 * 4 + 3,
+			x6 = 15 * 4 + 3;
+
+		xl = w / sz | 0;
+		yl = h / sz | 0;
+
+		for (y = 0; y < yl; y++) {
+			for (x = 0; x < xl; x++) {
+				b = ((x * sz) + (y * sz) * w) * 4;
+
+				blk.push(!!(
+					d[b + y1 + x1] | d[b + y1 + x2] | d[b + y1 + x3] | d[b + y1 + x4] | d[b + y1 + x5] | d[b + y1 + x6] |
+					d[b + y2 + x1] | d[b + y2 + x2] | d[b + y2 + x3] | d[b + y2 + x4] | d[b + y2 + x5] | d[b + y2 + x6] |
+					d[b + y3 + x1] | d[b + y3 + x2] | d[b + y3 + x3] | d[b + y3 + x4] | d[b + y3 + x5] | d[b + y3 + x6] |
+					d[b + y4 + x1] | d[b + y4 + x2] | d[b + y4 + x3] | d[b + y4 + x4] | d[b + y4 + x5] | d[b + y4 + x6] |
+					d[b + y5 + x1] | d[b + y5 + x2] | d[b + y5 + x3] | d[b + y5 + x4] | d[b + y5 + x5] | d[b + y5 + x6] |
+					d[b + y6 + x1] | d[b + y6 + x2] | d[b + y6 + x3] | d[b + y6 + x4] | d[b + y6 + x5] | d[b + y6 + x6] ));
+			}
+		}
+
+		this.data = blk;
+	};
+
+	this.marking = function(img) {
+		var sz = BLOCKSIZE, blk = this.data, g, el;
+		var i, x, xl, y, yl;
+
+		xl = img.width  / sz | 0;
+		yl = img.height / sz | 0;
+
+		el = $("blkcanv");
+		el.width  = xl * sz;
+		el.height = yl * sz;
+
+		g = el.getContext("2d");
+		g.fillStyle = BLOCK_COLOR;
+		g.clearRect(0, 0, xl * sz, yl * sz);
+
+		i = 0;
+		for (y = 0; y < yl; y++) {
+			for (x = 0; x < xl; x++) {
+				if (blk[i++]) g.fillRect(x * sz, y * sz, sz, sz);
+			}
+		}
+	};
+
+	this.suu = function() {
+		var i, ct = 0, blk = this.data;
+
+		for (i = 0; i < blk.length; i++) {
+			if (blk[i]) ct++;
+		}
+
+		return ct;
+	};
+};
+
+/*
+ *  blockmap 用コーデック (Base64＋簡易RLE)
+ */
+var blockmap = new function() {
+	var chr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$_".split("");
+	var asc = (function(){
+		var i, wk = [];
+		for (i = 0; i < chr.length; i++) wk[chr[i]] = i;
+		return wk;
+	})();
+
+	this.encode = function(data) {
+		var i, str = "";
+
+		for (i = 0; i < data.length; i += 6) {
+			str += chr[
+				(data[i + 0] && 32) |
+				(data[i + 1] && 16) |
+				(data[i + 2] &&  8) |
+				(data[i + 3] &&  4) |
+				(data[i + 4] &&  2) |
+				(data[i + 5] &&  1)
+			];
+		}
+
+		str = str.replace(/(A{2,9})/g, function(s, p){ return String.fromCharCode(38 + p.length); });  // 「A」2～9 文字の連長 →「()*+,-./」の順で１文字化
+		str = str.replace(/(_{2,8})/g, function(s, p){ return String.fromCharCode(56 + p.length); });  // 「_」2～8 文字の連長 →「:;<=>?@」 の順で１文字化
+
+		return str;
+	};
+
+	this.decode = function(str) {
+		var i, v, data = [];
+
+		str = str.replace(/([\x28-\x2F])/g, function(s, p){ return new Array((p.charCodeAt(0) - 38) +1).join("A"); });
+		str = str.replace(/([\x3A-\x40])/g, function(s, p){ return new Array((p.charCodeAt(0) - 56) +1).join("_"); });
+		str = str.replace(/[^$\w]/g, "");
+
+		for (i = 0; i < str.length; i++) {
+			v = asc[str.charAt(i)];
+			data.push(!!(v & 32), !!(v & 16), !!(v & 8), !!(v & 4), !!(v & 2), !!(v & 1));
+		}
+
+		return data;
+	};
+};
+
+/*
+ *  プレビュー表示
+ */
+var preview = {
+	on: function() {
+		var img = $("img"), suu = block.suu();
+
+		$("info-img").innerHTML = 'ピクセル数: ' + img.width + '×' + img.height + '<br>' +
+			'ブロック数: ' + suu + '個<br>' +
+			'ブロック面積率: ' + (suu / block.data.length * 100).toFixed(2) + '％';
+
+		$("info").style.left = img.width + 12 + "px";
+		$("blkcanv").style.visibility = "visible";
+		$("preview").style.display = "block";
+	},
+
+	off: function() {
+		$("preview").style.display = "none";
+	}
+};
+
+/*
+ *  イベント処理
+ */
+function exec()
+{
+	preview.off();
+	$("img").src = $("src").value + "?" + (new Date()).getTime();
+}
+
+function reset()
+{
+	preview.off();
+	$("src").value = $("src").defaultValue;
+	$("result").value = $("result").defaultValue;
+}
+
+window.onload = function()
+{
+	var img = $("img");
+
+	img.onload = function() {
+		var str = "";
+
+		try {
+			block.create(this);
+			block.marking(this);
+		}
+		catch (ex) {
+			alert({
+				SecurityError: "セキュリティ制限のため処理できません"
+			}[ex.name] || "必要な機能に未対応または有効化されていません");
+
+			return;
+		}
+
+		str += 'blockmap.add(/*** ' + $("src").value.replace(/^.*\//, "") + ' ***/ "\\\n';
+		str += blockmap.encode(block.data).replace(/(.{76})/g, "$1\\\n");
+		str += '");';
+
+		$("result").value = str;
+		preview.on();
+	};
+
+	img.onerror = img.onabort = function() {
+		alert("ファイルを読み込みできません");
+	};
+};
+
+//-->
+</script>
+</head>
+<body>
+<h1>ひめかべ ブロックマップ生成ツール Ver.1.00</h1>
+
+<h2>1. 画像を指定してください</h2>
+
+<p>画像ファイル名：
+<input id="src" type="text" value="">
+<input type="button" value="生成実行" onclick="exec()">
+<input type="button" value="リセット" onclick="reset()">
+</p>
+
+<h2>2. 貼り付け用データ</h2>
+
+<p><textarea id="result" cols="136" rows="8">
+画像ファイル名を入力して、生成実行ボタンを押してください。
+ここに貼り付け用データが出力されます。
+</textarea></p>
+
+<div id="preview">
+<h2>画像プレビュー</h2>
+
+<img id="img" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
+<canvas id="blkcanv"></canvas>
+
+<div id="info">
+<h3>画像情報</h3>
+<p id="info-img">&nbsp;</p>
+
+<h3>ブロックエリア表示</h3>
+<p>
+<input type="button" value="ON"  onclick="$('blkcanv').style.visibility = 'visible'">
+<input type="button" value="OFF" onclick="$('blkcanv').style.visibility = 'hidden'">
+</p>
+</div>
+</div><!-- /#preview -->
+
+</body>
+</html>

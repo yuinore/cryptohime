@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="Shift_JIS">
+<title>ひめかべ テンプレートファイル Ver.1.00用</title>
+<script src="hime.js"></script>
+<script>
+<!--
+/**************************************************************************/
+/*  ひめかべ 基本動作設定 (★:省略できる項目)                             */
+/**************************************************************************/
+
+conf = {
+   life:    8                     // 残機数
+  ,ball:    "img/ball.png"        // ボール画像
+  ,ballK:   "img/ballK.png"       // ボール画像(貫通時)
+  ,title:   "img/title.png"       // タイトル画像 ★
+  ,bonus:   ""                    // 全クリア後のボーナス画像 ★
+  ,next:    ""                    // 全クリア後のボーナスページ ★
+  ,margin:  80                    // パドルからブロックまでの余白
+  ,debug:   0                     // デバッグ(無敵)モード (0:OFF 1:ON)
+};
+
+/**************************************************************************/
+/*  ステージ設定 (１つ以上の設定が必要です)                               */
+/**************************************************************************/
+
+stage.push({                      // --- ステージ 1 ---
+   fuku:    "img/fuku.png"        // ブロック画像
+  ,bg:      "img/bg.png"          // 背景画像(複数指定可)
+  ,pdl:     "img/pdl.png"         // パドル画像
+  ,kantuu:  2                     // 貫通弾の発動判定幅 (0:貫通弾OFF)
+  ,speed:   4                     // ボールスピード(大きいほど速い)
+  ,ok:      10                    // クリア達成の残ブロック数または割合
+});
+
+/**************************************************************************/
+/*  ブロックマップ設定 (必要ない場合は省略できます)                       */
+/**************************************************************************/
+
+
+
+/***** ↑ ひめかべ 設定はここまでです ↑ **********************************/
+//-->
+</script>
+<style>
+<!--
+body {
+	color:#555555;
+	background:#FFFFFF;
+	font-size:14px;
+	text-align:center;
+}
+
+h1, #guide {
+	background:#EEEEEE;
+	border:1px solid #DDDDDD;
+	width:480px;
+	margin:16px auto;
+	padding:6px;
+}
+
+h1 {
+	font-size:16px;
+}
+
+#guide {
+	font-size:12px;
+	text-align:left;
+}
+
+#gamescreen {
+	background:#E4E8F0;
+	border:1px solid #B4B8C0;
+	display:inline-block;
+	position:relative;
+	overflow:hidden;
+	-webkit-tap-highlight-color:rgba(0,0,0,0);
+}
+
+#bootmsg {
+	color:#FFFFFF;
+	background:#586080;
+	text-align:left;
+	line-height:1.2;
+	width:480px;
+	height:640px;
+	margin:0;
+}
+
+#msg {
+	color:#3355FF;
+	font:bold 32px sans-serif;
+	text-shadow:-2px -2px 0 #FFF, -2px 2px 0 #FFF, 2px -2px 0 #FFF, 2px 2px 0 #FFF;
+}
+-->
+</style>
+</head>
+<body>
+<h1>ひめかべ テンプレートファイル Ver.1.00用</h1>
+
+<div id="gamescreen"><p>JavaScriptが無効です。動作には HTML5 Canvas に対応したブラウザが必要です。</p></div>
+
+<pre id="guide">
+【遊び方】
+・ブロック崩しゲームです。ブロック(服)を崩すとイラストが表示されます。
+・ゲーム画面をマウスクリック、またはタップするとボールを発射します。
+・マウスを左右に動かすか、ゲーム画面を左右にスライドするとパドルが移動します。
+・パドルの端でボールを打ち返すと、角度が変わります。
+・パドルの中心でボールを打ち返すと、貫通弾になります。
+・「S」キーを押すと、ボールが倍速／等速に切り替わります。
+
+※画面のタッチ操作は対応環境のみで有効です。
+</pre>
+
+<p><a href="#">戻る</a></p>
+
+</body>
+</html>
