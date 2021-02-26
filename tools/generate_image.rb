@@ -15,7 +15,6 @@ images = []
 
   images << image
   image.write("#{file_id}_small.png")
-  image.crop(0, 0, image.columns, image.rows).write("#{file_id}_small_crop.png")
 end
 
 ######## Basic Variables
@@ -32,7 +31,7 @@ transparent_tile = tile.blend(tile, 0, 0)
 blks = []
 
 [0, 2].each do |image_i|
-  blk = Array.new(h * w, false)
+  blk = Array.new(cols * rows, false)
 
   diff = images[image_i].composite(images[image_i + 1], 0, 0, DifferenceCompositeOp)
   (0...w / sz).each do |x|
@@ -136,4 +135,29 @@ originals.each do |original|
   end
 
   shuf.write("#{File.basename(original, ".*")}_shuffled.png")
+end
+
+######## blockmap Encoding
+def blockmap_encode(data)
+  str = ""
+  chr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$_"
+  0.step(data.length - 1, 6) do |i|
+    str += chr[
+      (data[i + 0] ? 32 : 0) |
+      (data[i + 1] ? 16 : 0) |
+      (data[i + 2] ?  8 : 0) |
+      (data[i + 3] ?  4 : 0) |
+      (data[i + 4] ?  2 : 0) |
+      (data[i + 5] ?  1 : 0)
+    ];
+  end
+
+  str = str.gsub(/A{2,9}/) { |x| (38 + x.size).chr } # 「A」2～9 文字の連長 →「()*+,-./」の順で１文字化
+  str = str.gsub(/_{2,8}/) { |x| (56 + x.size).chr } # 「_」2～8 文字の連長 →「:;<=>?@」 の順で１文字化
+
+  str
+end
+
+blks.each do |blk|
+  p blockmap_encode(blk)
 end
