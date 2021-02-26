@@ -48,7 +48,7 @@ function putImage(margin, imgs)
 
   wk = $("gamebg");
   wk.style.width  = w + "px";
-  wk.style.height = h + margin + "px";
+  wk.style.height = h + margin + 80 + "px";
   wk.innerHTML = str;
 
   $("gamecanv").style.visibility = "hidden";
@@ -70,6 +70,23 @@ function smoothingOff(g)  // スムージングの無効化 (非スケーリン�
   g.mozImageSmoothingEnabled = false;
   g.webkitImageSmoothingEnabled = false;
   g.imageSmoothingEnabled = false;
+}
+
+function bitshuffle(z, modulo)  // ビットシャッフル
+{
+  var subtotal = 0;
+  for (var bit = 12; bit >= 0; bit--) {
+    if ((modulo & (1 << bit)) != 0) {
+      if (z < subtotal + (1 << bit)) {
+        var z2 = subtotal;
+        for (var bit2 = 0; bit2 < bit; bit2++) {
+          z2 += (((z >> (bit - bit2 - 1)) & 1) << bit2);
+        }
+        return z2;
+      }
+      subtotal += (1 << bit);
+    }
+  }
 }
 
 /*
@@ -200,7 +217,7 @@ var scene = new function() {
     }
 
     s = stage[si];
-    putImage(conf.margin, [s.imgbg]);
+    putImage(conf.margin, []);
     game.init(s, clear, miss);
 
     puts("Life " + life);
@@ -244,7 +261,7 @@ var scene = new function() {
 
     if (cache.title) {
       s = stage[si];
-      putImage(conf.margin, [s.imgbg, s.imgfuku, cache.title]);
+      putImage(conf.margin, [cache.title]);
       puts();
       clickDo(ready);
     }
@@ -266,6 +283,7 @@ var game = new function() {
   var pdl, px, pw, ph, pW, edge;
   var ball, bx, by, brad, bmx, bmy;
   var deg, dx, dy, dist, rept, fast;
+  var current_stage;
 
   var kantuu = new function() {
     this.enabled;
@@ -328,6 +346,7 @@ var game = new function() {
     if (px < -pW) px = -pW;
     if (px > gw - pW) px = gw - pW;
 
+    pdl.style.bottom = "80px";
     pdl.style.left = px + "px";
     return false;
   }
@@ -342,6 +361,7 @@ var game = new function() {
     if (px < -pW) px = -pW;
     if (px > gw - pW) px = gw - pW;
 
+    pdl.style.bottom = "80px";
     pdl.style.left = px + "px";
     return false;
   }
@@ -424,7 +444,20 @@ var game = new function() {
     if (blk[i]) {
       blk[i] = false;
       suu--;
-      g.clearRect(x * sz, y * sz, sz, sz);
+
+      var cols = (gh - conf.margin) / sz;
+
+      //**************************************************************************
+      var z = ((y * line + x) * (59)) % (line * cols);
+      z = bitshuffle(z, line * (gh / sz));
+      z = (z * 23) % (line * (gh / sz));
+      z = bitshuffle(z, line * (gh / sz));
+      z = (z * 31) % (line * (gh / sz));
+      z = bitshuffle(z, line * (gh / sz));
+      var x2 = z % line;
+      var y2 = (z / line) | 0;
+      g.drawImage(current_stage.imgbg[0], (x2 * 9) % line * sz, (y2 * 13) % cols * sz, sz, sz, x * sz, y * sz, sz, sz);
+      //**************************************************************************
 
       if (!kantuu.enabled) {
         calcDeg((function(x, y) {
@@ -444,6 +477,31 @@ var game = new function() {
     }
 
     if (0 >= suu) {
+      //*************************************
+      // TODO: ステージクリア時にはブロックが残ってても良いが、全ステージクリア時にはすべてのブロックが消えていて欲しいのでその対応
+      var cols = (gh - conf.margin) / sz;
+
+      for(var x1 = 0; x1 < line; x1++) {
+        for(var y1 = 0; y1 < cols; y1++) {
+          var i1 = y1 * line + x1;
+
+          if (blk[i1]) {
+            //**************************************************************************
+            var z = ((y1 * line + x1) * (59)) % (line * cols);
+            z = bitshuffle(z, line * (gh / sz));
+            z = (z * 23) % (line * (gh / sz));
+            z = bitshuffle(z, line * (gh / sz));
+            z = (z * 31) % (line * (gh / sz));
+            z = bitshuffle(z, line * (gh / sz));
+            var x2 = z % line;
+            var y2 = (z / line) | 0;
+            g.drawImage(current_stage.imgbg[0], (x2 * 9) % line * sz, (y2 * 13) % cols * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
+            //**************************************************************************
+          }
+        }
+      }
+      //*************************************
+
       detach();
       setTimeout(clearfunc, 1);
       return false;
@@ -467,18 +525,43 @@ var game = new function() {
 
       el = $("gamebg");
       el.style.width  = gw + "px";
-      el.style.height = gh + "px";
+      el.style.height = (gh + 80) + "px";
 
       el = $("gamecanv");
-      el.width  = gw;
-      el.height = gh;
+
+      if(s==stage[0]) { // TODO: check! ************************************************
+        el.width  = gw;
+        el.height = gh;
+      }
+
       el.style.visibility = "visible";
 
       g = el.getContext("2d");
       smoothingOff(g);
 
-      g.clearRect(0, 0, gw, gh);
-      g.drawImage(img, 0, 0);
+      //*************************************
+      var sz = BLOCKSIZE;
+      var line = gw / sz;
+      var cols = (gh - conf.margin) / sz;
+
+      for(var x1 = 0; x1 < line; x1++) {
+        for(var y1 = 0; y1 < cols; y1++) {
+          var i1 = y1 * line + x1;
+
+          //**************************************************************************
+          var z = ((y1 * line + x1) * (59)) % (line * cols);
+          z = bitshuffle(z, line * (gh / sz));
+          z = (z * 23) % (line * (gh / sz));
+          z = bitshuffle(z, line * (gh / sz));
+          z = (z * 31) % (line * (gh / sz));
+          z = bitshuffle(z, line * (gh / sz));
+          var x2 = z % line;
+          var y2 = (z / line) | 0;
+          g.drawImage(img, (x2 * 9) % line * sz, (y2 * 13) % cols * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
+          //**************************************************************************
+        }
+      }
+      //*************************************
     }
 
     draw(s.imgfuku);
@@ -508,6 +591,8 @@ var game = new function() {
 
     clearfunc = clear;
     missfunc  = miss;
+
+    current_stage = s;
   };
 
   this.run = function() {
@@ -590,7 +675,7 @@ function oncompl()
 <div id="gamebg" style="position:relative">&nbsp;</div>\n\
 <canvas id="gamecanv" style="position:absolute; visibility:hidden; left:0; top:0"></canvas>\n\
 <img id="ball" style="position:absolute; visibility:hidden; left:0; bottom:0" src="' + conf.ball + '" width="' + BALLSIZE + '" height="' + BALLSIZE + '">\n\
-<img id="pdl"  style="position:absolute; visibility:hidden; left:0; bottom:0" src="' + conf.ball + '">\n\
+<img id="pdl"  style="position:absolute; visibility:hidden; left:0; bottom:80" src="' + conf.ball + '">\n\
 <span id="msg" style="position:absolute; visibility:hidden; white-space:nowrap; left:50%; bottom:50%">&nbsp;</span>\n';
 
     scene.title();
