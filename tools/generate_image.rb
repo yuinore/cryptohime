@@ -27,6 +27,26 @@ tile = Image.read("img/tile.png").first
 tile = tile.blend(tile, TILE_OPACITY, 0) # change tile opacity
 transparent_tile = tile.blend(tile, 0, 0)
 
+######## Key Determination
+def select_a_key(modulo)
+  # avoid 1 and (modulo - 1)
+  (2..(modulo - 2)).to_a.shuffle.find { |x| x.gcd(modulo) == 1 }
+end
+
+# gcd(cols, key1) == 1
+# gcd(rows, key2) == 1
+# gcd(cols * rows, key3[i]) == 1 for all i
+key1 = select_a_key(cols)
+key2 = select_a_key(rows)
+key3 = [
+  select_a_key(cols * rows),
+  select_a_key(cols * rows),
+  select_a_key(cols * rows),
+]
+puts "key1 = #{key1}"
+puts "key2 = #{key2}"
+puts "key3 = #{key3.inspect}"
+
 ######## Generate Block Table
 blks = []
 
@@ -71,10 +91,6 @@ end
 end
 
 ######## shuffle tiles
-key1 = 9            # gcd(w, key1) == 1
-key2 = 13           # gcd(h, key2) == 1
-key3 = [59, 23, 31] # gcd(w * h, key3[i]) == 1 for all i
-
 def bitshuffle(n, modulo)
   # FIXME: n must be <2^14
   subtotal = 0
