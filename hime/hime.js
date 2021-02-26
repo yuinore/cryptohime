@@ -466,8 +466,8 @@ var game = new function() {
       blk[i] = false;
       suu--;
 
-      var cols = (gh - conf.margin) / sz;
-      var x2y2 = decrypt_position(x, y, line, cols);
+      var rows = (gh - conf.margin) / sz;
+      var x2y2 = decrypt_position(x, y, line, rows);
       g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x * sz, y * sz, sz, sz);
 
       if (!kantuu.enabled) {
@@ -490,14 +490,14 @@ var game = new function() {
     if (0 >= suu) {
       //*************************************
       // TODO: ステージクリア時にはブロックが残ってても良いが、全ステージクリア時にはすべてのブロックが消えていて欲しいのでその対応
-      var cols = (gh - conf.margin) / sz;
+      var rows = (gh - conf.margin) / sz;
 
       for(var x1 = 0; x1 < line; x1++) {
-        for(var y1 = 0; y1 < cols; y1++) {
+        for(var y1 = 0; y1 < rows; y1++) {
           var i1 = y1 * line + x1;
 
           if (blk[i1]) {
-            var x2y2 = decrypt_position(x1, y1, line, cols);
+            var x2y2 = decrypt_position(x1, y1, line, rows);
             g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
           }
         }
@@ -544,11 +544,11 @@ var game = new function() {
       //*************************************
       var sz = BLOCKSIZE;
       var line = gw / sz;
-      var cols = (gh - conf.margin) / sz;
+      var rows = (gh - conf.margin) / sz;
 
       for(var x1 = 0; x1 < line; x1++) {
-        for(var y1 = 0; y1 < cols; y1++) {
-          var x2y2 = decrypt_position(x1, y1, line, cols);
+        for(var y1 = 0; y1 < rows; y1++) {
+          var x2y2 = decrypt_position(x1, y1, line, rows);
           g.drawImage(img, x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
         }
       }
