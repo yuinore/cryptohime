@@ -48,7 +48,7 @@ function putImage(margin, imgs)
 
   wk = $("gamebg");
   wk.style.width  = w + "px";
-  wk.style.height = h + margin + 80 + "px";
+  wk.style.height = h + margin + conf.margin2 + "px";
   wk.innerHTML = str;
 
   $("gamecanv").style.visibility = "hidden";
@@ -346,7 +346,7 @@ var game = new function() {
     if (px < -pW) px = -pW;
     if (px > gw - pW) px = gw - pW;
 
-    pdl.style.bottom = "80px";
+    pdl.style.bottom = conf.margin2 + "px";
     pdl.style.left = px + "px";
     return false;
   }
@@ -361,7 +361,7 @@ var game = new function() {
     if (px < -pW) px = -pW;
     if (px > gw - pW) px = gw - pW;
 
-    pdl.style.bottom = "80px";
+    pdl.style.bottom = conf.margin2 + "px";
     pdl.style.left = px + "px";
     return false;
   }
@@ -525,7 +525,7 @@ var game = new function() {
 
       el = $("gamebg");
       el.style.width  = gw + "px";
-      el.style.height = (gh + 80) + "px";
+      el.style.height = (gh + conf.margin2) + "px";
 
       el = $("gamecanv");
 
@@ -675,7 +675,7 @@ function oncompl()
 <div id="gamebg" style="position:relative">&nbsp;</div>\n\
 <canvas id="gamecanv" style="position:absolute; visibility:hidden; left:0; top:0"></canvas>\n\
 <img id="ball" style="position:absolute; visibility:hidden; left:0; bottom:0" src="' + conf.ball + '" width="' + BALLSIZE + '" height="' + BALLSIZE + '">\n\
-<img id="pdl"  style="position:absolute; visibility:hidden; left:0; bottom:80" src="' + conf.ball + '">\n\
+<img id="pdl"  style="position:absolute; visibility:hidden; left:0; bottom:' + conf.margin2 + '" src="' + conf.ball + '">\n\
 <span id="msg" style="position:absolute; visibility:hidden; white-space:nowrap; left:50%; bottom:50%">&nbsp;</span>\n';
 
     scene.title();
