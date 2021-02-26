@@ -104,7 +104,7 @@ function decrypt_position(x, y, w, h)
   z = bitshuffle(z, w * h);
   var x2 = z % w;
   var y2 = (z / w) | 0;
-  x2 = (x2 * key1) % w
+  x2 = (x2 * key1) % w;
   y2 = (y2 * key2) % h;
 
   return [x2, y2];
@@ -299,7 +299,7 @@ var game = new function() {
   var DISTMAX = 2, DEG1 = 0.0174533;
 
   var tmh, clearfunc, missfunc;
-  var blk, suu, line;
+  var blk, suu, line, rows;
   var g, gx, gy, gw, gh;
   var pdl, px, pw, ph, pW, edge;
   var ball, bx, by, brad, bmx, bmy;
@@ -466,7 +466,6 @@ var game = new function() {
       blk[i] = false;
       suu--;
 
-      var rows = (gh - conf.margin) / sz;
       var x2y2 = decrypt_position(x, y, line, rows);
       g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x * sz, y * sz, sz, sz);
 
@@ -490,8 +489,6 @@ var game = new function() {
     if (0 >= suu) {
       //*************************************
       // TODO: ステージクリア時にはブロックが残ってても良いが、全ステージクリア時にはすべてのブロックが消えていて欲しいのでその対応
-      var rows = (gh - conf.margin) / sz;
-
       for(var x1 = 0; x1 < line; x1++) {
         for(var y1 = 0; y1 < rows; y1++) {
           var i1 = y1 * line + x1;
@@ -543,8 +540,8 @@ var game = new function() {
 
       //*************************************
       var sz = BLOCKSIZE;
-      var line = gw / sz;
-      var rows = (gh - conf.margin) / sz;
+      var line = gw / sz | 0;
+      var rows = (gh - conf.margin) / sz | 0;
 
       for(var x1 = 0; x1 < line; x1++) {
         for(var y1 = 0; y1 < rows; y1++) {
@@ -574,6 +571,7 @@ var game = new function() {
     blk = block.copy(s.blkmap);
     suu = s.blksuu;
     line = gw / BLOCKSIZE | 0;
+    rows = (gh - conf.margin) / BLOCKSIZE | 0;
 
     rept = Math.ceil(s.speed / DISTMAX);
     dist = s.speed / rept;
