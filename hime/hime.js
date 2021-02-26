@@ -1,16 +1,16 @@
 /*
- *  JSƒuƒƒbƒN•ö‚µ -‚Ğ‚ß‚©‚×-  Ver.1.00
- *  Copyright (C)2014.5.27 by ‚İ‚È‚İ‚¹‚¢
+ *  JSãƒ–ãƒ­ãƒƒã‚¯å´©ã— -ã²ã‚ã‹ã¹-  Ver.1.00
+ *  Copyright (C)2014.5.27 by ã¿ãªã¿ã›ã„
  */
-var BLOCKSIZE = 16;   // ƒuƒƒbƒN‚ÌƒsƒNƒZƒ‹”(•ÏX‚Í”ñ„§)
-var BALLSIZE  = 11;   // ƒ{[ƒ‹‚ÌƒsƒNƒZƒ‹”
-var ANGLE_MIN = 10;   // ƒ{[ƒ‹Šp“xÅ¬’l
-var PDL_EDGE  = 0.2;  // ƒpƒhƒ‹—¼’[(ƒ{[ƒ‹Šp“x•ÏXƒGƒŠƒA)‚Ì’·‚³‚ÌŠ„‡
+var BLOCKSIZE = 16;   // ãƒ–ãƒ­ãƒƒã‚¯ã®ãƒ”ã‚¯ã‚»ãƒ«æ•°(å¤‰æ›´ã¯éæ¨å¥¨)
+var BALLSIZE  = 11;   // ãƒœãƒ¼ãƒ«ã®ãƒ”ã‚¯ã‚»ãƒ«æ•°
+var ANGLE_MIN = 10;   // ãƒœãƒ¼ãƒ«è§’åº¦æœ€å°å€¤
+var PDL_EDGE  = 0.2;  // ãƒ‘ãƒ‰ãƒ«ä¸¡ç«¯(ãƒœãƒ¼ãƒ«è§’åº¦å¤‰æ›´ã‚¨ãƒªã‚¢)ã®é•·ã•ã®å‰²åˆ
 
 var stage = [];
 
 /*
- *  ‚»‚Ì‘¼‚ÌŠÖ”
+ *  ãã®ä»–ã®é–¢æ•°
  */
 function $(nm)
 {
@@ -36,7 +36,7 @@ function putImage(margin, imgs)
 {
 	var i, wk, str = "", w = h = 0;
 
-	imgs = [].concat.apply([], imgs);  // ‚QŸŒ³”z—ñ‚ğ‚PŸŒ³‰»
+	imgs = [].concat.apply([], imgs);  // ï¼’æ¬¡å…ƒé…åˆ—ã‚’ï¼‘æ¬¡å…ƒåŒ–
 
 	for (i = 0; i < imgs.length; i++) {
 		wk = imgs[i];
@@ -64,7 +64,7 @@ function clickDo(func)
 	};
 }
 
-function smoothingOff(g)  // ƒXƒ€[ƒWƒ“ƒO‚Ì–³Œø‰» (”ñƒXƒP[ƒŠƒ“ƒO‰æ‘œ‚ğƒXƒ€[ƒWƒ“ƒO‚·‚éƒuƒ‰ƒEƒU‚ª‚ ‚é‚½‚ß)
+function smoothingOff(g)  // ã‚¹ãƒ ãƒ¼ã‚¸ãƒ³ã‚°ã®ç„¡åŠ¹åŒ– (éã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°ç”»åƒã‚’ã‚¹ãƒ ãƒ¼ã‚¸ãƒ³ã‚°ã™ã‚‹ãƒ–ãƒ©ã‚¦ã‚¶ãŒã‚ã‚‹ãŸã‚)
 {
 	g.msImageSmoothingEnabled = false;
 	g.mozImageSmoothingEnabled = false;
@@ -73,7 +73,7 @@ function smoothingOff(g)  // ƒXƒ€[ƒWƒ“ƒO‚Ì–³Œø‰» (”ñƒXƒP[ƒŠƒ“ƒO‰æ‘œ‚ğƒXƒ€[ƒWƒ
 }
 
 /*
- *  ‰æ‘œŠÇ—
+ *  ç”»åƒç®¡ç†
  */
 var cache = new function() {
 	var tmp = [];
@@ -105,7 +105,7 @@ var cache = new function() {
 				}
 			}
 
-			/*** Firefox ‚Å‹H‚É drawImage() ‚ÅƒGƒ‰[‚ª”­¶‚·‚é‚Ì‚ÅƒCƒ“ƒ^[ƒoƒ‹‚ğ’·‚ß‚É‚·‚é ***/
+			/*** Firefox ã§ç¨€ã« drawImage() ã§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã™ã‚‹ã®ã§ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒ«ã‚’é•·ã‚ã«ã™ã‚‹ ***/
 			setTimeout((err.length) ? function(){ cache.onerror(err); } : cache.oncompl, 500);
 		})();
 	};
@@ -115,7 +115,7 @@ var cache = new function() {
 };
 
 /*
- *  ƒuƒƒbƒNŠÇ—
+ *  ãƒ–ãƒ­ãƒƒã‚¯ç®¡ç†
  */
 var block = new function() {
 	this.create = function(img) {
@@ -136,15 +136,15 @@ var block = new function() {
 		d = g.getImageData(0, 0, w, h).data;
 
 		/*
-		 *  16‘ª’è“_‚Ì•s“§–¾“x‚ğ’²‚×‚é
-		 *  ¨‘S‚Ä“§–¾:ƒuƒƒbƒN‚È‚µ, ‚»‚Ì‘¼:ƒuƒƒbƒN‚ ‚è
+		 *  16æ¸¬å®šç‚¹ã®ä¸é€æ˜åº¦ã‚’èª¿ã¹ã‚‹
+		 *  â†’å…¨ã¦é€æ˜:ãƒ–ãƒ­ãƒƒã‚¯ãªã—, ãã®ä»–:ãƒ–ãƒ­ãƒƒã‚¯ã‚ã‚Š
 		 */
-		var y1 =  0 * w * 4,  // ‚x²‚Ì‘ª’è“_: (X,0) (X,5) (X,10) (X,15)
+		var y1 =  0 * w * 4,  // ï¼¹è»¸ã®æ¸¬å®šç‚¹: (X,0) (X,5) (X,10) (X,15)
 			y2 =  5 * w * 4,
 			y3 = 10 * w * 4,
 			y4 = 15 * w * 4;
 
-		var x1 =  0 * 4 + 3,  // ‚w²‚Ì‘ª’è“_: (0,Y) (5,Y) (10,Y) (15,Y)
+		var x1 =  0 * 4 + 3,  // ï¼¸è»¸ã®æ¸¬å®šç‚¹: (0,Y) (5,Y) (10,Y) (15,Y)
 			x2 =  5 * 4 + 3,
 			x3 = 10 * 4 + 3,
 			x4 = 15 * 4 + 3;
@@ -186,7 +186,7 @@ var block = new function() {
 };
 
 /*
- *  ŠeƒV[ƒ“‚Ìˆ—
+ *  å„ã‚·ãƒ¼ãƒ³ã®å‡¦ç†
  */
 var scene = new function() {
 	var si, life;
@@ -255,7 +255,7 @@ var scene = new function() {
 };
 
 /*
- *  ƒuƒƒbƒN•ö‚µƒƒCƒ“ˆ—
+ *  ãƒ–ãƒ­ãƒƒã‚¯å´©ã—ãƒ¡ã‚¤ãƒ³å‡¦ç†
  */
 var game = new function() {
 	var DISTMAX = 2, DEG1 = 0.0174533;
@@ -535,7 +535,7 @@ var game = new function() {
 };
 
 /*
- *  blockmap ƒfƒR[ƒhˆ—
+ *  blockmap ãƒ‡ã‚³ãƒ¼ãƒ‰å‡¦ç†
  */
 var blockmap = new function() {
 	var si = 0, asc = (function() {
@@ -561,7 +561,7 @@ var blockmap = new function() {
 };
 
 /*
- *  ƒXƒ^[ƒgƒAƒbƒv
+ *  ã‚¹ã‚¿ãƒ¼ãƒˆã‚¢ãƒƒãƒ—
  */
 function oncompl()
 {
@@ -579,11 +579,11 @@ function oncompl()
 		}
 	}
 	catch (ex) {
-		msg("¶¬‚É¸”s‚µ‚Ü‚µ‚½:\n" + wk.fuku);
+		msg("ç”Ÿæˆã«å¤±æ•—ã—ã¾ã—ãŸ:\n" + wk.fuku);
 		return;
 	}
 
-	msg("Š®—¹‚µ‚Ü‚µ‚½\n");
+	msg("å®Œäº†ã—ã¾ã—ãŸ\n");
 
 	setTimeout(function() {
 		$("gamescreen").innerHTML = '\n\
@@ -614,14 +614,14 @@ window.onload = function()
 	}
 
 	if (!capability()) {
-		$("gamescreen").innerHTML = '<p>”ñ‘Î‰‚Ìƒuƒ‰ƒEƒU‚Å‚·B“®ì‚É‚Í HTML5 Canvas ‚É‘Î‰‚µ‚½ƒuƒ‰ƒEƒU‚ª•K—v‚Å‚·B</p>';
+		$("gamescreen").innerHTML = '<p>éå¯¾å¿œã®ãƒ–ãƒ©ã‚¦ã‚¶ã§ã™ã€‚å‹•ä½œã«ã¯ HTML5 Canvas ã«å¯¾å¿œã—ãŸãƒ–ãƒ©ã‚¦ã‚¶ãŒå¿…è¦ã§ã™ã€‚</p>';
 		return;
 	}
 
 	$("gamescreen").innerHTML = '<pre id="bootmsg"></pre>';
 
-	msg("JSƒuƒƒbƒN•ö‚µ -‚Ğ‚ß‚©‚×-  Ver.1.00\n\n");
-	msg("‰æ‘œ‚ğ“Ç‚İ‚ñ‚Å‚¢‚Ü‚·... ");
+	msg("JSãƒ–ãƒ­ãƒƒã‚¯å´©ã— -ã²ã‚ã‹ã¹-  Ver.1.00\n\n");
+	msg("ç”»åƒã‚’èª­ã¿è¾¼ã‚“ã§ã„ã¾ã™... ");
 
 	cache.store(conf.ball);
 	cache.store(conf.ballK);
@@ -641,11 +641,11 @@ window.onload = function()
 	}
 
 	cache.onerror = function(list) {
-		msg("“Ç‚İ‚İ‚Å‚«‚Ü‚¹‚ñ:\n" + list.join("\n"));
+		msg("èª­ã¿è¾¼ã¿ã§ãã¾ã›ã‚“:\n" + list.join("\n"));
 	};
 
 	cache.oncompl = function() {
-		msg("Š®—¹‚µ‚Ü‚µ‚½\nƒuƒƒbƒNƒ}ƒbƒv‚ğ¶¬‚µ‚Ä‚¢‚Ü‚·... ");
+		msg("å®Œäº†ã—ã¾ã—ãŸ\nãƒ–ãƒ­ãƒƒã‚¯ãƒãƒƒãƒ—ã‚’ç”Ÿæˆã—ã¦ã„ã¾ã™... ");
 		setTimeout(oncompl, 1);
 	};
 
