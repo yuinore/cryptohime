@@ -1,4 +1,5 @@
-require 'rmagick'
+require "erb"
+require "rmagick"
 include Magick
 
 TILE_OPACITY = 0.4
@@ -184,3 +185,19 @@ end
 blks.each do |blk|
   p blockmap_encode(blk)
 end
+
+######## Convert index.html
+
+erb = File.read("hime/index.html.erb")
+
+erb_params = {
+  title: "Title Here",
+  image_width: 512,
+  image_height: 720,
+  paddle_margin_above: 0,
+  paddle_margin_below: 80,
+}
+
+result = ERB.new(erb).result_with_hash(erb_params)
+
+File.write("www/#{File.basename("hime/index.html.erb", ".erb")}", result)

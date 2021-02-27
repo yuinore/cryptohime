@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>ひめかべ テンプレートファイル Ver.1.00用</title>
+<title><%= title %></title>
 <script src="hime.js"></script>
 <style>
 <!--
@@ -44,8 +44,8 @@ h1 {
   background:#586080;
   text-align:left;
   line-height:1.2;
-  width:480px;
-  height:720px;
+  width:<%= image_width %>px;
+  height:<%= image_height + paddle_margin_above + paddle_margin_below %>px;
   margin:0;
 }
 
@@ -58,7 +58,7 @@ h1 {
 </style>
 </head>
 <body>
-<h1>ひめかべ テンプレートファイル Ver.1.00用</h1>
+<h1><%= title %></h1>
 
 <div id="gamescreen"><p>JavaScriptが無効です。動作には HTML5 Canvas に対応したブラウザが必要です。</p></div>
 

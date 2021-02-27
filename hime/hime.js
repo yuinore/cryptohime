@@ -733,7 +733,7 @@
     ,title:   "img/title.png"       // タイトル画像 ★
     ,bonus:   ""                    // 全クリア後のボーナス画像 ★
     ,next:    ""                    // 全クリア後のボーナスページ ★
-    ,margin:  80                    // パドルからブロックまでの余白
+    ,margin:  0                     // パドルからブロックまでの余白
     ,margin2: 80                    // margin under the paddle
   };
 
