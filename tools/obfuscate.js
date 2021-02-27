@@ -1,6 +1,8 @@
 const JavaScriptObfuscator = require('javascript-obfuscator');
 const fs = require('fs');
 
+IN_PLACE = true;
+
 if (process.argv.length <= 2) {
   console.error('Usage: node tools/obfuscate.js xxxx.js');
   process.exit(-1);
@@ -43,4 +45,10 @@ var obfuscationResult = JavaScriptObfuscator.obfuscate(
   }
 );
 
-console.log(obfuscationResult.getObfuscatedCode());
+obfuscated = obfuscationResult.getObfuscatedCode();
+
+if (IN_PLACE) {
+  fs.writeFileSync(filename, obfuscated, 'utf8');
+} else {
+  console.log(obfuscated);
+}

@@ -182,22 +182,37 @@ def blockmap_encode(data)
   str
 end
 
+blockmaps = []
+
 blks.each do |blk|
-  p blockmap_encode(blk)
+  blockmap = blockmap_encode(blk)
+  blockmaps << blockmap
+  p blockmap
 end
 
 ######## Convert index.html
 
-erb = File.read("hime/index.html.erb")
+erb_filenames = [
+  "index.html.erb",
+  "hime.js.erb",
+]
 
-erb_params = {
-  title: "Title Here",
-  image_width: 512,
-  image_height: 720,
-  paddle_margin_above: 0,
-  paddle_margin_below: 80,
-}
+erb_filenames.each do |erb_filename|
+  erb = File.read("hime/#{erb_filename}")
 
-result = ERB.new(erb).result_with_hash(erb_params)
+  erb_params = {
+    title: "Title Here",
+    image_width: 512,
+    image_height: 720,
+    paddle_margin_above: 0,
+    paddle_margin_below: 80,
+    key1: key1,
+    key2: key2,
+    key3: key3.inspect,
+    blockmap: blockmaps[0],
+  }
 
-File.write("www/#{File.basename("hime/index.html.erb", ".erb")}", result)
+  result = ERB.new(erb).result_with_hash(erb_params)
+
+  File.write("www/#{File.basename(erb_filename, ".erb")}", result)
+end

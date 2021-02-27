@@ -92,9 +92,9 @@
 
   function decrypt_position(x, y, w, h)
   {
-    var key1 = 9;
-    var key2 = 13;
-    var key3 = [59, 23, 31];
+    var key1 = <%= key1 %>;
+    var key2 = <%= key2 %>;
+    var key3 = <%= key3 %>;
 
     var z = y * w + x
     z = (z * key3[0]) % (w * h);
@@ -733,8 +733,8 @@
     ,title:   "img/title.png"       // タイトル画像 ★
     ,bonus:   ""                    // 全クリア後のボーナス画像 ★
     ,next:    ""                    // 全クリア後のボーナスページ ★
-    ,margin:  0                     // パドルからブロックまでの余白
-    ,margin2: 80                    // margin under the paddle
+    ,margin:  <%= paddle_margin_above %> // パドルからブロックまでの余白
+    ,margin2: <%= paddle_margin_below %> // margin under the paddle
   };
 
   /**************************************************************************/
@@ -754,7 +754,7 @@
   /*  ブロックマップ設定 (必要ない場合は省略できます)                       */
   /**************************************************************************/
 
-
+  blockmap.add("<%= blockmap %>")
 
   /***** ↑ ひめかべ 設定はここまでです ↑ **********************************/
 })()
