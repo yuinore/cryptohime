@@ -8,13 +8,13 @@ images = []
 
 ######## Resizing
 ["01", "02", "03", "04"].each do |file_id|
-  image = Image.read("#{file_id}.png").first
+  image = Image.read("tools/#{file_id}.png").first
 
   image = image.resize_to_fit(640, 720)
   image = image.crop(CenterGravity, image.columns / sz * sz, image.rows / sz * sz)
 
   images << image
-  image.write("#{file_id}_small.png")
+  image.write("tools/#{file_id}_small.png")
 end
 
 ######## Basic Variables
@@ -23,7 +23,7 @@ w = images[0].columns
 h = images[0].rows
 cols = w / sz
 rows = h / sz
-tile = Image.read("img/tile.png").first
+tile = Image.read("tools/img/tile.png").first
 tile = tile.blend(tile, TILE_OPACITY, 0) # change tile opacity
 transparent_tile = tile.blend(tile, 0, 0)
 
@@ -86,8 +86,8 @@ end
       end
     end
   end
-  withblock.write("#{image_id1}_withblock.png")
-  masked.write("#{image_id2}_masked.png")
+  withblock.write("tools/#{image_id1}_withblock.png")
+  masked.write("tools/#{image_id2}_masked.png")
 end
 
 ######## shuffle tiles
@@ -112,13 +112,19 @@ def bitshuffle(n, modulo)
 end
 
 originals = [
-  "01_withblock.png",
-  "02_masked.png",
-  "03_withblock.png",
-  "04_masked.png",
+  "tools/01_withblock.png",
+  "tools/02_masked.png",
+  "tools/03_withblock.png",
+  "tools/04_masked.png",
+]
+outfilenames = [
+  "www/img/01-fuku.png",
+  "www/img/01-bg.png",
+  "www/img/02-fuku.png",
+  "www/img/02-bg.png",
 ]
 
-originals.each do |original|
+originals.each_with_index do |original, image_i|
   orig = Image.read(original).first
   shuf = Image.new(w, h) do
     self.background_color = Pixel.new(0, QuantumRange, 0, 0) #transparent_color
@@ -151,6 +157,7 @@ originals.each do |original|
   end
 
   shuf.write("#{File.basename(original, ".*")}_shuffled.png")
+  shuf.write(outfilenames[image_i])
 end
 
 ######## blockmap Encoding
