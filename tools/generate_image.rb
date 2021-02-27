@@ -3,19 +3,23 @@ require "rmagick"
 include Magick
 
 TILE_OPACITY = 0.4
+WRITE_INTERMEDIATE_IMAGE = false
 
 sz = 16
 images = []
 
 ######## Resizing
-["01", "02", "03", "04"].each do |file_id|
+["01a", "01b", "02a", "02b"].each do |file_id|
   image = Image.read("tools/#{file_id}.png").first
 
   image = image.resize_to_fit(640, 720)
   image = image.crop(CenterGravity, image.columns / sz * sz, image.rows / sz * sz)
 
   images << image
-  image.write("tools/#{file_id}_small.png")
+
+  if WRITE_INTERMEDIATE_IMAGE
+    image.write("www/img/#{file_id}_small.png")
+  end
 end
 
 ######## Basic Variables
@@ -51,10 +55,10 @@ puts "key3 = #{key3.inspect}"
 ######## Generate Block Table
 blks = []
 
-[0, 2].each do |image_i|
+[0, 1].each do |image_i|
   blk = Array.new(cols * rows, false)
 
-  diff = images[image_i].composite(images[image_i + 1], 0, 0, DifferenceCompositeOp)
+  diff = images[image_i * 2].composite(images[image_i * 2 + 1], 0, 0, DifferenceCompositeOp)
   (0...w / sz).each do |x|
     (0...h / sz).each do |y|
       (0...sz).each do |i|
@@ -75,20 +79,27 @@ end
 
 ######## Composite Tile Graphics
 ######## and Mask Second Image
-[["01", "02", 0, 1], ["03", "04", 2, 3]].each do |image_id1, image_id2, image_i1, image_i2|
-  withblock = images[image_i1]
-  masked = images[image_i2]
+unencrypted_images = []
+[["01", 0], ["02", 1]].each do |image_id, image_i|
+  withblock = images[image_i * 2]
+  masked = images[image_i * 2 + 1]
   (0...w / sz).each do |x|
     (0...h / sz).each do |y|
-      if blks[image_i1 / 2][y * cols + x]
+      if blks[image_i][y * cols + x]
         withblock = withblock.composite(tile, x * sz, y * sz, AtopCompositeOp)
       else
         masked = masked.composite(transparent_tile, x * sz, y * sz, CopyCompositeOp)
       end
     end
   end
-  withblock.write("tools/#{image_id1}_withblock.png")
-  masked.write("tools/#{image_id2}_masked.png")
+
+  unencrypted_images << withblock
+  unencrypted_images << masked
+
+  if WRITE_INTERMEDIATE_IMAGE
+    withblock.write("www/img/#{image_id}a_withblock.png")
+    masked.write("www/img/#{image_id}b_masked.png")
+  end
 end
 
 ######## shuffle tiles
@@ -112,12 +123,6 @@ def bitshuffle(n, modulo)
   raise "Bitshuffle Error"
 end
 
-originals = [
-  "tools/01_withblock.png",
-  "tools/02_masked.png",
-  "tools/03_withblock.png",
-  "tools/04_masked.png",
-]
 outfilenames = [
   "www/img/01-fuku.png",
   "www/img/01-bg.png",
@@ -125,10 +130,9 @@ outfilenames = [
   "www/img/02-bg.png",
 ]
 
-originals.each_with_index do |original, image_i|
-  orig = Image.read(original).first
+unencrypted_images.each_with_index do |orig, image_i|
   shuf = Image.new(w, h) do
-    self.background_color = Pixel.new(0, QuantumRange, 0, 0) #transparent_color
+    self.background_color = Pixel.new(0, QuantumRange, 0, 0) # #00FF00
   end
 
   (0...w / sz).each do |x|
@@ -145,7 +149,7 @@ originals.each_with_index do |original, image_i|
       x2 = (x2 * key1) % cols
       y2 = (y2 * key2) % rows
 
-      #iportion = orig.crop(x * sz + 1, y * sz, sz, sz) # nazeka 1px zureru
+      #iportion = orig.crop(x * sz + 1, y * sz, sz, sz) # なぜか1pxずれる
       #shuf = shuf.composite(portion, x2 * sz, y2 * sz, AtopCompositeOp)
 
       (0...sz).each do |i|
@@ -157,7 +161,6 @@ originals.each_with_index do |original, image_i|
     end
   end
 
-  shuf.write("tools/#{File.basename(original, ".*")}_shuffled.png") # FIXME:
   shuf.write(outfilenames[image_i])
 end
 
