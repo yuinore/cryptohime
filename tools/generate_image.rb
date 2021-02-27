@@ -157,7 +157,7 @@ originals.each_with_index do |original, image_i|
     end
   end
 
-  shuf.write("#{File.basename(original, ".*")}_shuffled.png")
+  shuf.write("tools/#{File.basename(original, ".*")}_shuffled.png") # FIXME:
   shuf.write(outfilenames[image_i])
 end
 
@@ -209,7 +209,8 @@ erb_filenames.each do |erb_filename|
     key1: key1,
     key2: key2,
     key3: key3.inspect,
-    blockmap: blockmaps[0],
+    nums: (1..blockmaps.size).to_a.map { |i| format("%02d", i) },
+    blockmaps: blockmaps,
   }
 
   result = ERB.new(erb).result_with_hash(erb_params)
