@@ -1,0 +1,12 @@
+{
+  "name": "cryptohime",
+  "version": "1.0.0",
+  "description": "Himekabe Encryption and Modification Tools",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "",
+  "private": "true"
+}
