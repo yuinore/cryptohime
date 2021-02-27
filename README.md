@@ -1,6 +1,12 @@
 # cryptohime
 Himekabe Encryption and Modification Tools
 
+## Features
+- Split images into tiles and shuffle (Image encryption)
+- Obfuscate source code (with Javascript Obfuscator)
+- Add margin below the paddle
+- Auto-generate blockmap
+
 ## Install
 ```
 bundle install
