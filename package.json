@@ -8,5 +8,8 @@
   },
   "author": "",
   "license": "",
-  "private": "true"
+  "private": "true",
+  "devDependencies": {
+    "javascript-obfuscator": "^2.10.4"
+  }
 }
