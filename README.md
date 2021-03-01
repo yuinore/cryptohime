@@ -4,6 +4,7 @@ Himekabe Encryption and Modification Tools
 ## Features
 - Split images into tiles and shuffle (Image encryption)
 - Obfuscate source code (with Javascript Obfuscator)
+- Overlap translucent tile images
 - Add margin below the paddle
 - Auto-generate blockmap
 
