@@ -300,7 +300,7 @@
     var DISTMAX = 2, DEG1 = 0.0174533;
 
     var tmh, clearfunc, missfunc;
-    var blk, suu, line, rows;
+    var blk, suu, cols, rows;
     var g, gx, gy, gw, gh;
     var pdl, px, pw, ph, pW, edge;
     var ball, bx, by, brad, bmx, bmy;
@@ -461,13 +461,13 @@
 
       x = bx / sz | 0;
       y = by / sz | 0;
-      i = y * line + x;
+      i = y * cols + x;
 
       if (blk[i]) {
         blk[i] = false;
         suu--;
 
-        var x2y2 = decrypt_position(x, y, line, rows);
+        var x2y2 = decrypt_position(x, y, cols, rows);
         g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x * sz, y * sz, sz, sz);
 
         if (!kantuu.enabled) {
@@ -489,10 +489,10 @@
 
       if (0 >= suu) {
         //*************************************
-        for(var x1 = 0; x1 < line; x1++) {
+        for(var x1 = 0; x1 < cols; x1++) {
           for(var y1 = 0; y1 < rows; y1++) {
-            if (blk[y1 * line + x1]) {
-              var x2y2 = decrypt_position(x1, y1, line, rows);
+            if (blk[y1 * cols + x1]) {
+              var x2y2 = decrypt_position(x1, y1, cols, rows);
               g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
             }
           }
@@ -535,12 +535,12 @@
 
         //*************************************
         var sz = BLOCKSIZE;
-        var line = gw / sz | 0;
+        var cols = gw / sz | 0;
         var rows = (gh - conf.margin) / sz | 0;
 
-        for(var x1 = 0; x1 < line; x1++) {
+        for(var x1 = 0; x1 < cols; x1++) {
           for(var y1 = 0; y1 < rows; y1++) {
-            var x2y2 = decrypt_position(x1, y1, line, rows);
+            var x2y2 = decrypt_position(x1, y1, cols, rows);
             g.drawImage(img, x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
           }
         }
@@ -565,7 +565,7 @@
 
       blk = block.copy(s.blkmap);
       suu = s.blksuu;
-      line = gw / BLOCKSIZE | 0;
+      cols = gw / BLOCKSIZE | 0;
       rows = (gh - conf.margin) / BLOCKSIZE | 0;
 
       rept = Math.ceil(s.speed / DISTMAX);
