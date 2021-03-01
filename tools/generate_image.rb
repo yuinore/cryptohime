@@ -70,7 +70,7 @@ blks = []
         (0...sz).each do |j|
           color = diff.pixel_color(x * sz + i, y * sz + j)
 
-          if ([color.red, color.green, color.blue] != [0, 0, 0])
+          if color.red ** 2 + color.green ** 2 + color.blue ** 2 > (QuantumRange * 0.01) ** 2
             blk[y * cols + x] = true
             break
           end
@@ -210,8 +210,8 @@ erb_filenames.each do |erb_filename|
 
   erb_params = {
     title: "Title Here",
-    image_width: 512,
-    image_height: 720,
+    image_width: w,
+    image_height: h,
     paddle_margin_above: 0,
     paddle_margin_below: 80,
     key1: key1,
