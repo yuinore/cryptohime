@@ -137,6 +137,14 @@ outfilenames = [
 ]
 
 unencrypted_images.each_with_index do |orig, image_i|
+  if QUANTIZE_COLORS != 0
+    orig = orig.quantize(QUANTIZE_COLORS)
+
+    if WRITE_INTERMEDIATE_IMAGE
+      orig.write("#{outfilenames[image_i]}_quantized.png")
+    end
+  end
+
   shuf = Image.new(w, h) do
     self.background_color = Pixel.new(0, QuantumRange, 0, 0) # #00FF00
   end
@@ -165,14 +173,6 @@ unencrypted_images.each_with_index do |orig, image_i|
         end
       end
     end
-  end
-
-  if QUANTIZE_COLORS != 0
-    if WRITE_INTERMEDIATE_IMAGE
-      shuf.write("#{outfilenames[image_i]}_orig.png")
-    end
-
-    shuf = shuf.quantize(QUANTIZE_COLORS)
   end
 
   shuf.write(outfilenames[image_i])
