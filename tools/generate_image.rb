@@ -32,6 +32,11 @@ tile = Image.read("tools/img/tile.png").first
 tile = tile.blend(tile, TILE_OPACITY, 0) # change tile opacity
 transparent_tile = tile.blend(tile, 0, 0)
 
+######## Generate Title Image
+title_logo = Image.read("tools/img/title_logo.png").first
+title_image = images[0].composite(title_logo, CenterGravity, OverCompositeOp)
+title_image.write("www/img/title.png")
+
 ######## Key Determination
 def select_a_key(modulo)
   # avoid 1 and (modulo - 1)
