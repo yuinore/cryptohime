@@ -4,6 +4,7 @@ include Magick
 
 TILE_OPACITY = 0.4
 WRITE_INTERMEDIATE_IMAGE = false
+QUANTIZE_COLORS = 2048
 
 sz = 16
 images = []
@@ -164,6 +165,14 @@ unencrypted_images.each_with_index do |orig, image_i|
         end
       end
     end
+  end
+
+  if QUANTIZE_COLORS != 0
+    if WRITE_INTERMEDIATE_IMAGE
+      shuf.write("#{outfilenames[image_i]}_orig.png")
+    end
+
+    shuf = shuf.quantize(QUANTIZE_COLORS)
   end
 
   shuf.write(outfilenames[image_i])

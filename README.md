@@ -6,6 +6,7 @@ Himekabe Encryption and Modification Tools
 - Obfuscate source code (with Javascript Obfuscator)
 - Overlap translucent tile images
 - Clear remaining blocks on stage clear
+- Quantize colors
 - Add margin below the paddle
 - Auto-generate blockmap
 
