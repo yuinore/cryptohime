@@ -1,4 +1,4 @@
-# cryptohime
+# Cryptohime
 Himekabe Encryption and Modification Tools
 
 ## Features
