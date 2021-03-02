@@ -726,12 +726,12 @@
   /**************************************************************************/
 
   conf = {
-     life:    8                     // 残機数
-    ,ball:    "img/ball.png"        // ボール画像
-    ,ballK:   "img/ballK.png"       // ボール画像(貫通時)
-    ,title:   "img/title.png"       // タイトル画像 ★
-    ,bonus:   ""                    // 全クリア後のボーナス画像 ★
-    ,next:    ""                    // 全クリア後のボーナスページ ★
+     life:    8                          // 残機数
+    ,ball:    "img/ball.png"             // ボール画像
+    ,ballK:   "img/ballK.png"            // ボール画像(貫通時)
+    ,title:   "img/title.png"            // タイトル画像 ★
+    ,bonus:   ""                         // 全クリア後のボーナス画像 ★
+    ,next:    ""                         // 全クリア後のボーナスページ ★
     ,margin:  <%= paddle_margin_above %> // パドルからブロックまでの余白
     ,margin2: <%= paddle_margin_below %> // margin under the paddle
   };
@@ -740,14 +740,14 @@
   /*  ステージ設定 (１つ以上の設定が必要です)                               */
   /**************************************************************************/
 
-  <% nums.each do |num| %>
-  stage.push({                      // --- ステージ 1 ---
+  <% nums.each_with_index do |num, i| %>
+  stage.push({                          // --- ステージ 1 ---
      fuku:    "img/<%= num %>-fuku.png" // ブロック画像
     ,bg:      "img/<%= num %>-bg.png"   // 背景画像
-    ,pdl:     "img/pdl.png"         // パドル画像
-    ,kantuu:  2                     // 貫通弾の発動判定幅 (0:貫通弾OFF)
-    ,speed:   4                     // ボールスピード(大きいほど速い)
-    ,ok:      10                    // クリア達成の残ブロック数または割合
+    ,pdl:     "img/pdl.png"             // パドル画像
+    ,kantuu:  2                         // 貫通弾の発動判定幅 (0:貫通弾OFF)
+    ,speed:   4                         // ボールスピード(大きいほど速い)
+    ,ok:      <%= oks[i] %>             // クリア達成の残ブロック数または割合
   });
   <% end %>
 

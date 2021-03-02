@@ -229,6 +229,7 @@ erb_filenames.each do |erb_filename|
     key3: key3.inspect,
     nums: (1..blockmaps.size).to_a.map { |i| format("%02d", i) },
     blockmaps: blockmaps,
+    oks: [10, 2],
   }
 
   result = ERB.new(erb).result_with_hash(erb_params)
