@@ -108,7 +108,7 @@ unencrypted_images = []
   end
 end
 
-######## shuffle tiles
+######## Shuffle Tiles
 def bitshuffle(n, modulo)
   # FIXME: n must be <2^14
   subtotal = 0
@@ -153,10 +153,13 @@ unencrypted_images.each_with_index do |orig, image_i|
     (0...h / sz).each do |y|
       z = y * cols + x
       z = (z * key3[0]) % (cols * rows)
+      z = (z + (image_i + 1) * cols) % (cols * rows)
       z = bitshuffle(z, cols * rows)
       z = (z * key3[1]) % (cols * rows)
+      z = (z + (image_i + 1) * cols) % (cols * rows)
       z = bitshuffle(z, cols * rows)
       z = (z * key3[2]) % (cols * rows)
+      z = (z + (image_i + 1) * cols) % (cols * rows)
       z = bitshuffle(z, cols * rows)
       x2 = z % cols
       y2 = z / cols

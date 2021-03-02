@@ -90,7 +90,7 @@
     }
   }
 
-  function decrypt_position(x, y, w, h)
+  function decrypt_position(x, y, w, h, image_i)
   {
     var key1 = <%= key1 %>;
     var key2 = <%= key2 %>;
@@ -98,10 +98,13 @@
 
     var z = y * w + x
     z = (z * key3[0]) % (w * h);
+    z = (z + (image_i + 1) * w) % (w * h);
     z = bitshuffle(z, w * h);
     z = (z * key3[1]) % (w * h);
+    z = (z + (image_i + 1) * w) % (w * h);
     z = bitshuffle(z, w * h);
     z = (z * key3[2]) % (w * h);
+    z = (z + (image_i + 1) * w) % (w * h);
     z = bitshuffle(z, w * h);
     var x2 = z % w;
     var y2 = (z / w) | 0;
@@ -305,7 +308,7 @@
     var pdl, px, pw, ph, pW, edge;
     var ball, bx, by, brad, bmx, bmy;
     var deg, dx, dy, dist, rept, fast;
-    var current_stage;
+    var stage_index, current_stage;
 
     var kantuu = new function() {
       this.enabled;
@@ -467,7 +470,7 @@
         blk[i] = false;
         suu--;
 
-        var x2y2 = decrypt_position(x, y, cols, rows);
+        var x2y2 = decrypt_position(x, y, cols, rows, stage_index * 2 + 1);
         g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x * sz, y * sz, sz, sz);
 
         if (!kantuu.enabled) {
@@ -492,7 +495,7 @@
         for(var x1 = 0; x1 < cols; x1++) {
           for(var y1 = 0; y1 < rows; y1++) {
             if (blk[y1 * cols + x1]) {
-              var x2y2 = decrypt_position(x1, y1, cols, rows);
+              var x2y2 = decrypt_position(x1, y1, cols, rows, stage_index * 2 + 1);
               g.drawImage(current_stage.imgbg[0], x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
             }
           }
@@ -514,6 +517,8 @@
     }
 
     this.init = function(s, clear, miss) {
+      stage_index = stage.indexOf(s);
+
       function draw(img) {
         var el;
 
@@ -540,7 +545,7 @@
 
         for(var x1 = 0; x1 < cols; x1++) {
           for(var y1 = 0; y1 < rows; y1++) {
-            var x2y2 = decrypt_position(x1, y1, cols, rows);
+            var x2y2 = decrypt_position(x1, y1, cols, rows, stage_index * 2);
             g.drawImage(img, x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
           }
         }
