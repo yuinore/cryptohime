@@ -9,6 +9,7 @@
   var PDL_EDGE  = 0.2;  // パドル両端(ボール角度変更エリア)の長さの割合
 
   var stage = [];
+  var canvasImageData = [];
 
   /*
    *  その他の関数
@@ -538,18 +539,7 @@
         g = el.getContext("2d");
         smoothingOff(g);
 
-        //*************************************
-        var sz = BLOCKSIZE;
-        var cols = gw / sz | 0;
-        var rows = (gh - conf.margin) / sz | 0;
-
-        for(var x1 = 0; x1 < cols; x1++) {
-          for(var y1 = 0; y1 < rows; y1++) {
-            var x2y2 = decrypt_position(x1, y1, cols, rows, stage_index * 2);
-            g.drawImage(img, x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
-          }
-        }
-        //*************************************
+        g.putImageData(canvasImageData[stage_index], 0, 0);
       }
 
       draw(s.imgfuku);
@@ -638,6 +628,41 @@
     };
   };
 
+  function getCanvasImageData()
+  {
+    var gw = stage[0].imgfuku.width;
+    var gh = stage[0].imgfuku.height;
+
+    var el = $("gamecanv");
+    el.width  = gw; // <-- this will clear the canvas
+    el.height = gh;
+
+    //el.style.visibility = "visible";
+
+    var g = el.getContext("2d");
+    smoothingOff(g);
+
+    //*************************************
+    var sz = BLOCKSIZE;
+    var cols = gw / sz | 0;
+    var rows = (gh - conf.margin) / sz | 0;
+
+    for(var s_i = 0; s_i < stage.length; s_i++) {
+      for(var x1 = 0; x1 < cols; x1++) {
+        for(var y1 = 0; y1 < rows; y1++) {
+          var x2y2 = decrypt_position(x1, y1, cols, rows, s_i * 2);
+          g.drawImage(stage[s_i].imgfuku, x2y2[0] * sz, x2y2[1] * sz, sz, sz, x1 * sz, y1 * sz, sz, sz);
+        }
+      }
+
+      var data = g.getImageData(0, 0, gw, gh);
+      canvasImageData.push(data);
+    }
+    //*************************************
+
+    g.clearRect(0, 0, gw, gh);
+  }
+
   /*
    *  スタートアップ
    */
@@ -662,6 +687,7 @@
     }
 
     msg("完了しました\n");
+    msg("ゲームスクリーンを描画しています... ");
 
     setTimeout(function() {
       $("gamescreen").innerHTML = '\n\
@@ -670,6 +696,8 @@
   <img id="ball" style="position:absolute; visibility:hidden; left:0; bottom:0" src="' + conf.ball + '" width="' + BALLSIZE + '" height="' + BALLSIZE + '">\n\
   <img id="pdl"  style="position:absolute; visibility:hidden; left:0; bottom:' + conf.margin2 + '" src="' + conf.ball + '">\n\
   <span id="msg" style="position:absolute; visibility:hidden; white-space:nowrap; left:50%; bottom:50%">&nbsp;</span>\n';
+
+      getCanvasImageData();
 
       scene.title();
     }, 500);
