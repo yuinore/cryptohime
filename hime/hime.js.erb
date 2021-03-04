@@ -599,12 +599,15 @@
       document.ontouchmove = shotReady(pdlTouchMove);
       document.onkeydown   = keyDown;
 
-      clickDo(function() {
-        puts();
-        document.onmousemove = pdlMove;
-        document.ontouchmove = pdlTouchMove;
-        tmh = setInterval(frame, 16);
-      });
+      // init処理中に発生したクリックイベントの読み捨て
+      setTimeout(() => {
+        clickDo(function() {
+          puts();
+          document.onmousemove = pdlMove;
+          document.ontouchmove = pdlTouchMove;
+          tmh = setInterval(frame, 16);
+        });
+      }, 300);
     };
   };
 
